@@ -9,14 +9,10 @@ import time
 import re
 
 class XmlListener(threading.Thread):
-    '''
-    classdocs
-    '''
 
-
-    def __init__(self, tux, url):
+    def __init__(self, runner, url):
         threading.Thread.__init__(self)
-        self.myTux = tux
+        self.runner = runner
         self.url=url
         
     def parse(self):
@@ -39,10 +35,10 @@ class XmlListener(threading.Thread):
             timestamp = timestamp[-19:]
             self.date = timestamp.split('_')[0]
             self.time = timestamp.split('_')[1].replace('-', ':')
-            self.curString = "Name %s.\r Build#%s.\r State: %s.\r Date: %s.\r Time: %s." % (self.name, self.number, self.state, self.date, self.time)
+            self.curString = "Name %s.\rBuild#%s.\rState: %s.\rDate: %s.\rTime: %s." % (self.name, self.number, self.state, self.date, self.time)
             if self.number != self.oldNumber and self.oldNumber != "" :
-                self.myTux.setMessage(str(self.curString))
-                self.myTux.commands.put('say')
+                self.runner.setText(str("Status of build #"+self.number+" of job "+self.name+" is "+self.state))
+                self.runner.commands.put('say')
                 print self.curString
                 if 'broken' in self.state:
                     self.countFailures+=1
@@ -54,8 +50,9 @@ class XmlListener(threading.Thread):
         self.run = "false"
     
     def getLastBuildStatus(self):
-        self.myTux.setMessage(str("Last build of job "+self.name+" was "+self.state))
-        self.myTux.commands.put('say')
+        self.runner.setText(str("Last build of job "+self.name+" was "+self.state))
+        print self.curString
+        self.runner.commands.put('say')
         
         
         
