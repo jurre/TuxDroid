@@ -35,11 +35,13 @@ class XmlListener(threading.Thread):
             timestamp = timestamp[-19:]
             self.date = timestamp.split('_')[0]
             self.time = timestamp.split('_')[1].replace('-', ':')
-            self.curString = "Name %s.\rBuild#%s.\rState: %s.\rDate: %s.\rTime: %s." % (self.name, self.number, self.state, self.date, self.time)
-            if self.number != self.oldNumber and self.oldNumber != "" :
+            self.curString = "Name %s.\rBuild#%s.\rState: %s.\rDate: %s.\rTime: %s.\n" % (self.name, self.number, self.state, self.date, self.time)
+            if self.number != self.oldNumber:
+                print self.curString
+            if self.number != self.oldNumber and self.oldNumber != "" and self.state != 'stable':
                 self.runner.setText(str("Status of build #"+self.number+" of job "+self.name+" is "+self.state))
                 self.runner.commands.put('say')
-                print self.curString
+                
                 if 'broken' in self.state:
                     self.countFailures+=1
                     print self.countFailures  
@@ -50,7 +52,7 @@ class XmlListener(threading.Thread):
         self.run = "false"
     
     def getLastBuildStatus(self):
-        self.runner.setText(str("Last build of job "+self.name+" was "+self.state))
+        self.runner.setText(str("Last build of "+self.name+" test was "+self.state))
         print self.curString
         self.runner.commands.put('say')
         
