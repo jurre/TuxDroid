@@ -39,7 +39,7 @@ class XmlListener(threading.Thread):
             if self.number != self.oldNumber:
                 print self.curString
             if self.number != self.oldNumber and self.oldNumber != "" and self.state != 'stable':
-                self.runner.setText(str("Status of build #"+self.number+" of job "+self.name+" is "+self.state))
+                self.runner.setText(str("Status of job "+self.name+" is "+self.state))
                 self.runner.commands.put('say')
                 
                 if 'broken' in self.state:
