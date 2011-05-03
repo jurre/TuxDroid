@@ -3,26 +3,38 @@ Created on May 2, 2011
 
 @author: marthyn
 '''
-from Tux import *
-from Runner import *    
-from XmlListener import *
-from RemoteListener import *
+import runner
+import listeners.xml
+import listeners.remote
+import sys
 
 if __name__ == '__main__':
-    myTux = Tux("127.0.0.1", 54321)
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'fake':
+        import tux.faketux
+        myTux = tux.faketux.Tux("127.0.0.1", 54321)        
+    else:
+        import tux.tux
+        myTux = tux.tux.Tux("127.0.0.1", 54321)
+        
     myTux.connect()
     
-    runner = Runner(myTux)
-    remote = RemoteListener(myTux, runner)
+    runner = runner.Runner(myTux)
+    remote = listeners.remote.RemoteListener(myTux, runner)
     
+    idealListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Ideal/rssAll" ) 
+    independentListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Independent/rssAll")
+    liveListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Live/rssAll")
+    orderListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Order/rssAll")
+    paymentListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Payment/rssAll")
+    testjobListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Test%20job/rssAll")
     
-    IdealListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Ideal/rssAll" ) 
-    IndependentListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Independent/rssAll")
-    LiveListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Live/rssAll")
-    OrderListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Order/rssAll")
-    PaymentListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Payment/rssAll")
-    TestjobListener = XmlListener( runner, "http://www.wtstest.com:8080/job/Test%20job/rssAll")
-    listeners = {'ideal':IdealListener, 'independent':IndependentListener, 'live':LiveListener, 'order':OrderListener, 'payment':PaymentListener, 'test':TestjobListener}
+    listeners = {'ideal': idealListener,
+                 'independent': independentListener, 
+                 'live': liveListener, 
+                 'order': orderListener, 
+                 'payment': paymentListener, 
+                 'test': testjobListener}
     
     runner.setRemote(remote)
     runner.setListeners(listeners)

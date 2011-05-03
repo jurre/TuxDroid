@@ -5,19 +5,20 @@ Created on May 2, 2011
 '''
 import time
 import threading
+import yaml
+
 class RemoteListener(threading.Thread):
 
     def __init__(self, tux, runner):
         threading.Thread.__init__(self)
         self.tux = tux
         self.runner = runner
-        self.comList = {"K_1":"ideal", "K_2":"live", "K_3":"independent", "K_4":"order", "K_5":"payment", "K_6":"test", "K_STANDBY":"stop"}
-        
+        self.comList = yaml.load(open("config/remote_config.yaml").read())
         
     def run(self):
-        self.run = 'true'
+        self.run = True
         self.stateOld = ''
-        while self.run=='true':
+        while self.run == True:
             self.state = self.tux.tux.remote.getState()
             if self.state != self.stateOld:
                 if self.state in self.comList:
@@ -27,4 +28,4 @@ class RemoteListener(threading.Thread):
             self.stateOld = self.state  
             
     def stop(self):
-        self.run = 'false'
+        self.run = False
