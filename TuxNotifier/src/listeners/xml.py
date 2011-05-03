@@ -38,13 +38,10 @@ class XmlListener(threading.Thread):
             self.curString = "Name %s.\rBuild # %s.\rState: %s.\rDate: %s.\rTime: %s.\n" % (self.name, self.number, self.state, self.date, self.time)
             if self.number != self.oldNumber:
                 print self.curString
-<<<<<<< HEAD:TuxNotifier/src/XmlListener.py
-            if self.number != self.oldNumber and self.oldNumber != "" and self.state != 'stable':
-                self.runner.setText(str("Status of job "+self.name+" is "+self.state))
-=======
+
             if self.number != self.oldNumber and self.oldNumber != False and self.state != 'stable':
-                self.runner.setText("Status of build # %s of job %s is %s" % (self.number, self.name, self.state))
->>>>>>> 407f2e0112df2afcd96f79b6e89a237c75961e56:TuxNotifier/src/listeners/xml.py
+                self.runner.setText("Status of job %s is %s" % (self.name, self.state))
+
                 self.runner.commands.put('say')
                 
                 if 'broken' in self.state:
