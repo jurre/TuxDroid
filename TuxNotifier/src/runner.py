@@ -12,6 +12,7 @@ class Runner( threading.Thread ):
     def __init__(self, tux):
         threading.Thread.__init__(self)
         self.commands = Queue.Queue()
+        self.actions = Queue.Queue()        
         self.myTux = tux
     
     """Set the listeners, so their functions can be used."""
@@ -22,22 +23,30 @@ class Runner( threading.Thread ):
     def setRemote(self, remote):
         self.remote = remote
     
-    """Set the text that Tux will say if the say command is executed"""
-    def setText(self, text):
-        self.text = text
+    def addCommand(self, command):
+        self.commands.put(command)
+        
+    def addAction(self, command):
+        self.actions.put(command)
+        self.commands.put('handleAction') # Dirty
     
     """The start of the thread and the main function. The runner handles the commands put in by other classes"""
     def run(self):
         while True:
             command = self.commands.get()
+            
             if command == "stop":
                 self.myTux.disconnect()
                 for listener in self.listeners:
                     listener.stop()
                 return
-            if command == "say":
-                self.myTux.speak(self.text)
+                
+            elif command == "handleAction":
+                action = self.actions.get_nowait()
+                action.setTux(self.myTux)
+                action.execute()
             
-            if self.listeners.has_key(command):
+            elif self.listeners.has_key(command):
                 self.listeners[command].getLastBuildStatus()
             
+            self.commands.task_done()

@@ -28,7 +28,7 @@ class RemoteListener(threading.Thread):
             self.state = self.tux.tux.remote.getState()
             if self.state != self.stateOld:
                 if self.state in self.comList:
-                    self.runner.commands.put(self.comList[self.state])
+                    self.runner.addCommand(self.comList[self.state])
            
             time.sleep(0.01)
             self.stateOld = self.state  
