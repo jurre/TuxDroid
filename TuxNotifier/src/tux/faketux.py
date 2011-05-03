@@ -1,3 +1,8 @@
+'''
+Created on May 2, 2011
+
+@author: Marthyn Olthof, Daan Davidsz
+'''
 import sys
 import time
 import threading
