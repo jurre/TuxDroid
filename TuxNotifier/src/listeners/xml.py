@@ -6,8 +6,7 @@ Created on May 2, 2011
 import threading
 import feedparser
 import time
-import re
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class XmlListener(threading.Thread):
 
