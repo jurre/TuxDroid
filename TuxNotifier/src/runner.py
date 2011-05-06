@@ -12,12 +12,16 @@ class Runner( threading.Thread ):
     def __init__(self, tux):
         threading.Thread.__init__(self)
         self.commands = Queue.Queue()
-        self.actions = Queue.Queue()        
-        self.myTux = tux
+        self.actions = Queue.Queue()     
+        self.listeners = {}   
+        self.tux = tux
     
-    """Set the listeners, so their functions can be used."""
-    def setListeners(self, listeners):
-        self.listeners = listeners
+    """Adds a listener"""
+    def addListener(self, name, listener):
+        if self.listeners.has_key(name):
+            raise Exception('Listener with the same name already added: ' + name)
+        else:
+            self.listeners[name] = listener
     
     """Set the remote, so it can be used by runner, currently not used 8-) """
     def setRemote(self, remote):
@@ -32,18 +36,26 @@ class Runner( threading.Thread ):
     
     """The start of the thread and the main function. The runner handles the commands put in by other classes"""
     def run(self):
+        print "Runner thread started"
+    
+        self.tux.openEyes()
+        
+        for name, listener in self.listeners.iteritems():
+            print "Starting the thread of listener: " + name
+            listener.start()
+        
         while True:
             command = self.commands.get()
             
             if command == "stop":
-                self.myTux.disconnect()
+                self.tux.disconnect()
                 for listener in self.listeners:
                     listener.stop()
                 return
                 
             elif command == "handleAction":
                 action = self.actions.get_nowait()
-                action.setTux(self.myTux)
+                action.setTux(self.tux)
                 action.execute()
             
             elif self.listeners.has_key(command):

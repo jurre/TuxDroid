@@ -30,8 +30,11 @@ class XmlListener(threading.Thread):
             
     def checkBuildStatus(self):
         try:
+            print "Retrieving new status from URL: " + self.url
             feed = feedparser.parse( self.url )
+            print "Retrieve succesful"
         except ex:
+            print "Retrieve failed"
             message = "Could not retrieve the feed for job %s. Please help me." % self.name
             self.runner.addAction(SpeakAction(message))
             return
@@ -40,10 +43,10 @@ class XmlListener(threading.Thread):
         self.name = self.title.split('#')[0]
         self.number = int(self.title.split('#')[1].split(' ')[0])
         self.state = self.title.split('(')[1].replace('(', '').replace(')', '')          
-        timestamp = feefeed.entries[0]['id'][-19:]
+        timestamp = feed.entries[0]['id'][-19:]
         self.date = timestamp.split('_')[0]
         self.time = timestamp.split('_')[1].replace('-', ':')
-        self.curString = "Name %s.\rBuild # %s.\rState: %s.\rDate: %s.\rTime: %s.\n" % (self.name, self.number, self.state, self.date, self.time)
+        self.curString = "Name %s.\nBuild # %s.\nState: %s.\nDate: %s.\nTime: %s.\n" % (self.name, self.number, self.state, self.date, self.time)
         if self.number != self.oldNumber:
             print self.curString #all new builds are printed
 
