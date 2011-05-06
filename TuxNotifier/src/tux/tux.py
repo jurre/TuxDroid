@@ -37,9 +37,9 @@ class Tux( threading.Thread ):
     def speak(self, text):        
         self.tux.mouth.open()
         self.tux.eyes.open()
-        self.tux.tts.speak(text)    
+        self.tux.tts.speak(text)
+        self.tux.eyes.close()
         self.tux.mouth.open()
-        self.tux.eyes.close()              
     
     """Connect to the http-server.""" 
     def connect(self):

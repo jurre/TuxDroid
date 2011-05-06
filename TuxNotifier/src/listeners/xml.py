@@ -46,7 +46,7 @@ class XmlListener(threading.Thread):
         timestamp = feed.entries[0]['id'][-19:]
         self.date = timestamp.split('_')[0]
         self.time = timestamp.split('_')[1].replace('-', ':')
-        self.curString = "Name %s.\nBuild # %s.\nState: %s.\nDate: %s.\nTime: %s.\n" % (self.name, self.number, self.state, self.date, self.time)
+        self.curString = "Name %s\nBuild # %s\nState: %s\nDate: %s\nTime: %s\n" % (self.name, self.number, self.state, self.date, self.time)
         if self.number != self.oldNumber:
             print self.curString #all new builds are printed
 
@@ -72,7 +72,7 @@ class XmlListener(threading.Thread):
                         
                 #If the state is stable again the counter is reset
                 if 'back to normal' in self.state:
-                    self.countFailures= 0
+                    self.countFailures = 0
                     self.runner.addAction(SpeakAction("Job %s is back to normal again. Well done!" % self.name)) 
                         
         self.oldNumber = self.number  
@@ -81,6 +81,4 @@ class XmlListener(threading.Thread):
         self.run = False
     
     def getLastBuildStatus(self):
-        self.runner.addAction(SpeakAction("Last build job %s was %s" % (self.name, self.state)))
-        print self.curString
-
+        return "Last build job %s was %s" % (self.name, self.state)

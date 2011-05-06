@@ -5,6 +5,7 @@ Created on May 2, 2011
 '''
 import threading
 import Queue
+from action.speak import SpeakAction
 
 class Runner( threading.Thread ):
 
@@ -59,6 +60,9 @@ class Runner( threading.Thread ):
                 action.execute()
             
             elif self.listeners.has_key(command):
-                self.listeners[command].getLastBuildStatus()
+                lastBuildStatus = self.listeners[command].getLastBuildStatus()
+                action = SpeakAction(lastBuildStatus)
+                action.setTux(self.tux)                
+                action.execute()
             
             self.commands.task_done()
