@@ -16,6 +16,10 @@ class XmlListener(threading.Thread):
         threading.Thread.__init__(self)
         self.runner = runner
         self.url = url
+        self.minimumFailureCount = 1
+        
+    def setMinimumFailureCount(self, count):
+        self.minimumFailureCount = count
     
     """The start of the thread and main function. A continious loop checks the last entry of the RSS feed
     and checks if it is new and saves the name of the job, buildnumber, state, date and time."""
@@ -47,6 +51,7 @@ class XmlListener(threading.Thread):
         self.date = timestamp.split('_')[0]
         self.time = timestamp.split('_')[1].replace('-', ':')
         self.curString = "Name %s\nBuild # %s\nState: %s\nDate: %s\nTime: %s\n" % (self.name, self.number, self.state, self.date, self.time)
+        
         if self.number != self.oldNumber:
             print self.curString #all new builds are printed
 
@@ -54,7 +59,11 @@ class XmlListener(threading.Thread):
                 #If the build just broke, Tux tells us
                 if 'broken since this build' in self.state: 
                     self.brokenSince = datetime.strptime(self.date + " " + self.time, "%Y-%m-%d %H:%M:%S")   
-                    self.runner.addAction(SpeakAction("Job %s broke. Please fix it!" % self.name))
+                    
+                    if self.minimumFailureCount == 1:
+                        self.runner.addAction(SpeakAction("Job %s broke. Please fix it!" % self.name))
+                    elif self.countFailures >= self.minimumFailureCount:
+                        self.runner.addAction(SpeakAction("Job %s has been broken for %s consecutive builds. Please fix it!" % (self.countFailures, self.name)))                  
                     
                 #If the build was aborted, Tux lets us know
                 if 'aborted' in self.state:

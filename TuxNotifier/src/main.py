@@ -35,12 +35,15 @@ if __name__ == '__main__':
     
     # Create xml listener object for every jenkins job
     idealListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Ideal/rssAll" ) 
+    idealListener.setMinimumFailureCount(5)
+
     independentListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Independent/rssAll")
     liveListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Live/rssAll")
     orderListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Order/rssAll")
     paymentListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Payment/rssAll")
     testjobListener = listeners.xml.XmlListener( runner, "http://www.wtstest.com:8080/job/Test%20job/rssAll")
 
+    runner.addListener('ideal', idealListener)
     runner.addListener('independent', independentListener)
     runner.addListener('live', liveListener)
     runner.addListener('order', orderListener)
