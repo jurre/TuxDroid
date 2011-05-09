@@ -81,8 +81,9 @@ class XmlListener(threading.Thread):
                         
                 #If the state is stable again the counter is reset
                 if 'back to normal' in self.state:
+                    if self.countFailures >= self.minimumFailureCount:
+                        self.runner.addAction(SpeakAction("Job %s is back to normal again. Well done!" % self.name)) 
                     self.countFailures = 0
-                    self.runner.addAction(SpeakAction("Job %s is back to normal again. Well done!" % self.name)) 
                         
         self.oldNumber = self.number  
             
