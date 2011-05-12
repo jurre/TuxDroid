@@ -1,6 +1,8 @@
 '''
 Created on May 12, 2011
 
+This class is an extended print function. It prints lines of text to the console and stores information into a MongoDB
+
 @author: marthyn
 '''
 from time import strftime
