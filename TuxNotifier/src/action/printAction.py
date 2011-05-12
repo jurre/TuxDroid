@@ -13,7 +13,7 @@ class PrintAction():
         self.connect()
         
         self.date = strftime("%Y-%m-%d")
-        self.time = strftime("%Y-%m-%d")
+        self.time = strftime("%H:%M:%S")
         
         if type == "system":
             self.system_msg(text)
