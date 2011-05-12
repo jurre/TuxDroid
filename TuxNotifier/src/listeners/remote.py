@@ -25,13 +25,17 @@ class RemoteListener(threading.Thread):
         self.run = True
         self.stateOld = ''
         while self.run == True:
-            self.state = self.tux.tux.remote.getState()
-            if self.state != self.stateOld:
-                if self.state in self.comList:
-                    self.runner.commands.put(self.comList[self.state])
-           
-            time.sleep(0.01)
-            self.stateOld = self.state  
+            if hasattr(self.tux.tux, 'remote'):
+                self.state = self.tux.tux.remote.getState()
+                if self.state != self.stateOld:
+                    if self.state in self.comList:
+                        self.runner.addCommand(self.comList[self.state])
+               
+                time.sleep(0.05)
+                self.stateOld = self.state  
+            else:
+                print 'Could not find remote API'
+                time.sleep(60)
     
     """Set the run variable to False so the thread stops"""        
     def stop(self):

@@ -23,13 +23,23 @@ class Tux( threading.Thread ):
         self.tux.server.destroy()
         self.limit = 0
     
+    """Blink"""    
+    def blink(self):
+        self.tux.eyes.close()
+        time.sleep(0.2)
+        self.tux.eyes.open()
+        
+    def openEyes(self):
+        self.tux.eyes.open()
+        self.tux.led.both.on()
+        
     """Tux open's his mouth and eyes and says the given text out loud."""
     def speak(self, text):        
         self.tux.mouth.open()
         self.tux.eyes.open()
-        self.tux.tts.speak(text)    
+        self.tux.tts.speak(text)
+        self.tux.eyes.close()
         self.tux.mouth.open()
-        self.tux.eyes.close()              
     
     """Connect to the http-server.""" 
     def connect(self):

@@ -5,6 +5,7 @@ Created on May 2, 2011
 '''
 import threading
 import Queue
+from action.speak import SpeakAction
 
 class Runner( threading.Thread ):
 
@@ -12,32 +13,57 @@ class Runner( threading.Thread ):
     def __init__(self, tux):
         threading.Thread.__init__(self)
         self.commands = Queue.Queue()
-        self.myTux = tux
+        self.actions = Queue.Queue()     
+        self.listeners = {}   
+        self.tux = tux
     
-    """Set the listeners, so their functions can be used."""
-    def setListeners(self, listeners):
-        self.listeners = listeners
+    """Adds a listener"""
+    def addListener(self, name, listener):
+        if self.listeners.has_key(name):
+            raise Exception('Listener with the same name already added: ' + name)
+        else:
+            self.listeners[name] = listener
     
     """Set the remote, so it can be used by runner, currently not used 8-) """
     def setRemote(self, remote):
         self.remote = remote
     
-    """Set the text that Tux will say if the say command is executed"""
-    def setText(self, text):
-        self.text = text
+    def addCommand(self, command):
+        self.commands.put(command)
+        
+    def addAction(self, command):
+        print 'Runner::addAction "%s"' % command.__class__
+        self.actions.put(command)
+        self.commands.put('handleAction') # Dirty
     
     """The start of the thread and the main function. The runner handles the commands put in by other classes"""
     def run(self):
+        print "Runner thread started"
+    
+        self.tux.openEyes()
+        
+        for name, listener in self.listeners.iteritems():
+            print "Starting the thread of listener: " + name
+            listener.start()
+        
         while True:
             command = self.commands.get()
+            
             if command == "stop":
-                self.myTux.disconnect()
+                self.tux.disconnect()
                 for listener in self.listeners:
                     listener.stop()
                 return
-            if command == "say":
-                self.myTux.speak(self.text)
+                
+            elif command == "handleAction":
+                action = self.actions.get_nowait()
+                action.setTux(self.tux)
+                action.execute()
             
-            if self.listeners.has_key(command):
-                self.listeners[command].getLastBuildStatus()
+            elif self.listeners.has_key(command):
+                lastBuildStatus = self.listeners[command].getLastBuildStatus()
+                action = SpeakAction(lastBuildStatus)
+                action.setTux(self.tux)                
+                action.execute()
             
+            self.commands.task_done()
