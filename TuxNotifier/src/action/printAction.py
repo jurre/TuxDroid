@@ -10,7 +10,7 @@ class PrintAction():
 
     def __init__(self, text, type):
         
-        self.connect()
+        self.connect("mongo.wtstest.com", 27017)
         
         self.date = strftime("%Y-%m-%d")
         self.time = strftime("%H:%M:%S")
@@ -23,6 +23,7 @@ class PrintAction():
             self.tux_speak_msg(text)
         print text
     
+    """Function to put a system message into the MongoDB"""
     def system_msg(self, text):
         tabel = self.db.system_messages
         text = text.replace("\n", " ")
@@ -32,6 +33,7 @@ class PrintAction():
                   "Message": text}
         tabel.insert(record)
     
+    """Function to put a job status into the MongoDB"""
     def job_status_msg(self, text):
         tabel = self.db.jobs
         textArray = text.split("\n")
@@ -42,6 +44,7 @@ class PrintAction():
                   "Status": textArray[2].split(" ")[1]}
         tabel.insert(record)
     
+    """Function to put a line of text that tux says into the MongoDB"""
     def tux_speak_msg(self, text):
         tabel = self.db.tuxSpeak
         text = text.replace("\n", " ")
@@ -51,8 +54,9 @@ class PrintAction():
                   "Message": text}
         tabel.insert(record)
     
-    def connect(self):
-        connection = Connection('mongo.wtstest.com', 27017)
+    """Connect to the MongoDB"""
+    def connect(self, url, port):
+        connection = Connection(url, port)
         self.db=connection.tuxdroid
         
         
