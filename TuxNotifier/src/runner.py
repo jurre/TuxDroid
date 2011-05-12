@@ -5,7 +5,9 @@ Created on May 2, 2011
 '''
 import threading
 import Queue
+import time
 from action.speak import SpeakAction
+from action.printAction import PrintAction
 
 class Runner( threading.Thread ):
 
@@ -32,18 +34,19 @@ class Runner( threading.Thread ):
         self.commands.put(command)
         
     def addAction(self, command):
-        print 'Runner::addAction "%s"' % command.__class__
+        PrintAction('Runner::addAction "%s"' % command.__class__, "system")
         self.actions.put(command)
         self.commands.put('handleAction') # Dirty
     
     """The start of the thread and the main function. The runner handles the commands put in by other classes"""
     def run(self):
-        print "Runner thread started"
-    
+        PrintAction("Starting the runner thread", "system")
+        
+        self.run = True
         self.tux.openEyes()
         
         for name, listener in self.listeners.iteritems():
-            print "Starting the thread of listener: " + name
+            PrintAction("Starting the thread of listener: " + name, "system")
             listener.start()
         
         while True:
@@ -51,8 +54,10 @@ class Runner( threading.Thread ):
             
             if command == "stop":
                 self.tux.disconnect()
-                for listener in self.listeners:
+                self.remote.stop()
+                for name, listener in self.listeners.iteritems():
                     listener.stop()
+                PrintAction("Stopping main thread", "system")
                 return
                 
             elif command == "handleAction":
@@ -67,3 +72,5 @@ class Runner( threading.Thread ):
                 action.execute()
             
             self.commands.task_done()
+    
+

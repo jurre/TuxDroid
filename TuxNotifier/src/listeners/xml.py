@@ -8,12 +8,14 @@ import feedparser
 import time
 from datetime import datetime
 from action.speak import SpeakAction
+from action.printAction import PrintAction
 
 class XmlListener(threading.Thread):
 
     """Constructor of XmlListener, creates a new Xmllistener object with the given url and adds a runner object"""
     def __init__(self, runner, url):
         threading.Thread.__init__(self)
+        self.test = True
         self.runner = runner
         self.url = url
         self.minimumFailureCount = 1
@@ -28,17 +30,23 @@ class XmlListener(threading.Thread):
         self.oldNumber = False
         self.countFailures = 0
         self.brokeSinceTime = ""
+        loopcount = 0
         while self.run == True:
-            self.checkBuildStatus()
-            time.sleep(30) 
+            if loopcount % 60 == 0: 
+                self.checkBuildStatus()
+                loopcount = 0
+            time.sleep(1) 
+            loopcount+= 1
+            
+        PrintAction("Stopping thread xmllistener "+self.url, "system")
             
     def checkBuildStatus(self):
         try:
-            print "Retrieving new status from URL: " + self.url
+            PrintAction("Retrieving new status from URL: " + self.url, "system")
             feed = feedparser.parse( self.url )
-            print "Retrieve succesful"
-        except ex:
-            print "Retrieve failed"
+            PrintAction("Retrieval from "+ self.url +" was succesful", "system")
+        except:
+            PrintAction("Could not retrieve the feed for job %s. Please help me." % self.name, "system")
             message = "Could not retrieve the feed for job %s. Please help me." % self.name
             self.runner.addAction(SpeakAction(message))
             return
@@ -53,11 +61,11 @@ class XmlListener(threading.Thread):
         self.curString = "Name %s\nBuild # %s\nState: %s\nDate: %s\nTime: %s\n" % (self.name, self.number, self.state, self.date, self.time)
         
         if self.number != self.oldNumber:
-            print self.curString #all new builds are printed
+            PrintAction(self.curString, "job_status") #all new builds are printed
             
-            if self.oldNumber == False and 'broken' in self.state:
+            if self.oldNumber == False and 'broken' in self.state and self.test == False:
                 self.runner.addAction(SpeakAction("Job %s is broken." % self.name))
-
+                
             elif self.oldNumber != False:
             
                 #If the build just broke, Tux tells us

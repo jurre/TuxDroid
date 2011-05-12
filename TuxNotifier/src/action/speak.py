@@ -1,3 +1,4 @@
+from action.printAction import PrintAction
 
 class SpeakAction():
 
@@ -8,4 +9,5 @@ class SpeakAction():
         self.tux = tux
         
     def execute(self):
-        self.tux.speak(self.text)
+        PrintAction(self.text, "tux_speak")
+        self.tux.speak(str(self.text))

@@ -6,6 +6,7 @@ Created on May 2, 2011
 import time
 import threading
 import yaml
+from action.printAction import PrintAction 
 
 class RemoteListener(threading.Thread):
 
@@ -22,6 +23,7 @@ class RemoteListener(threading.Thread):
     Humans press the buttons longer than that. Once a button is pressed it checks the comList for an command
     linkend to the key-code and puts that command in the runners commandlist"""    
     def run(self):
+        PrintAction("Starting the remote thread", "system")
         self.run = True
         self.stateOld = ''
         while self.run == True:
@@ -29,13 +31,15 @@ class RemoteListener(threading.Thread):
                 self.state = self.tux.tux.remote.getState()
                 if self.state != self.stateOld:
                     if self.state in self.comList:
-                        self.runner.addCommand(self.comList[self.state])
+                        self.runner.addCommand((self.comList[self.state]))
                
                 time.sleep(0.05)
                 self.stateOld = self.state  
             else:
-                print 'Could not find remote API'
-                time.sleep(60)
+                PrintAction('Could not find remote API', "system")
+                time.sleep(1)
+        
+        PrintAction('Stopping thread Remote', "system")
     
     """Set the run variable to False so the thread stops"""        
     def stop(self):

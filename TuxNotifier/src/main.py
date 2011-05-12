@@ -11,7 +11,7 @@ from datetime import *
 from action.speak import SpeakAction
 
 if __name__ == '__main__':
-    host = '127.0.0.1'
+    host = '192.168.156.75'
     port = 54321
     
     if len(sys.argv) > 1:
@@ -50,6 +50,6 @@ if __name__ == '__main__':
     runner.addListener('live', liveListener)
     runner.addListener('order', orderListener)
     runner.addListener('payment', paymentListener)    
-    
+    runner.addListener('testjob', testjobListener)    
     # Start the runner thread
     runner.start()
