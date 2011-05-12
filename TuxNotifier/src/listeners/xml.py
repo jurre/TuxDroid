@@ -54,8 +54,12 @@ class XmlListener(threading.Thread):
         
         if self.number != self.oldNumber:
             print self.curString #all new builds are printed
+            
+            if self.oldNumber == False and 'broken' in self.state:
+                self.runner.addAction(SpeakAction("Job %s is broken." % self.name))
 
-            if self.oldNumber != False:
+            elif self.oldNumber != False:
+            
                 #If the build just broke, Tux tells us
                 if 'broken since this build' in self.state: 
                     self.brokenSince = datetime.strptime(self.date + " " + self.time, "%Y-%m-%d %H:%M:%S")   

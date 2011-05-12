@@ -32,6 +32,7 @@ class Runner( threading.Thread ):
         self.commands.put(command)
         
     def addAction(self, command):
+        print 'Runner::addAction "%s"' % command.__class__
         self.actions.put(command)
         self.commands.put('handleAction') # Dirty
     
